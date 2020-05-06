@@ -40,10 +40,13 @@ jobs:
         echo "::add-path::/home/linuxbrew/.linuxbrew/bin"
     - name: Install RAPIDS brew dependencies
       run: |
-        brew install gcc -d -v
-        brew install pandoc -d -v
+        brew install gcc
+        brew install pandoc
         brew install r -d -v
+        echo "Finished installing r"
+        R --version
         R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
+        echo "Finished installing rmarkdown"
     # Install pip and pytest
     - name: Install RAPIDS python dependencies
       run: |
