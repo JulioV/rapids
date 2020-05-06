@@ -41,6 +41,7 @@ jobs:
         #echo "::add-path::/home/linuxbrew/.linuxbrew/bin"
     - name: Install RAPIDS brew dependencies
       run: |
+        docker build -t linuxbrew-bionic https://raw.githubusercontent.com/Linuxbrew/docker/master/bionic/Dockerfile
         brew --version
         brew install gcc
         brew install pandoc
