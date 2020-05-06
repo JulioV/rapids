@@ -7,6 +7,8 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    container:
+      image: homebrew/brew
     services:
       mysql:
           image: mysql:5.7
@@ -24,7 +26,6 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: docker://homebrew/brew:latest
     - uses: actions/checkout@v2
     - name: Setup Python # Set Python version
       uses: actions/setup-python@v1
@@ -39,37 +40,6 @@ jobs:
        # test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
         #echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
         #echo "::add-path::/home/linuxbrew/.linuxbrew/bin"
-    - name: Set up Homebrew
-      id: set-up-homebrew
-      run: |
-        if which brew &>/dev/null; then
-          HOMEBREW_REPOSITORY="$(brew --repo)"
-        else
-          HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
-          HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX/Homebrew"
-          sudo mkdir -p "$HOMEBREW_REPOSITORY/Library/Taps"
-          git -C "$HOMEBREW_REPOSITORY" init
-          git -C "$HOMEBREW_REPOSITORY" remote add origin "https://github.com/Homebrew/brew"
-          cd "$HOMEBREW_PREFIX"
-          sudo mkdir -p bin etc include lib opt sbin share var/homebrew/linked Cellar
-          sudo ln -sf ../Homebrew/bin/brew "$HOMEBREW_PREFIX/bin/"
-          cd -
-          export PATH="$HOMEBREW_PREFIX/bin:$PATH"
-          echo "::add-path::$HOMEBREW_PREFIX/bin"
-        fi
-        cd "$HOMEBREW_REPOSITORY"
-        rm -rf "$GITHUB_WORKSPACE"
-        ln -s "$HOMEBREW_REPOSITORY" "$GITHUB_WORKSPACE"
-        git fetch --tags origin 2.2.15
-        git checkout --force -B master FETCH_HEAD
-        brew update-reset Library/Taps/homebrew/homebrew-core
-        cd -
-        GEMS_HASH=$(shasum -a 256 "$HOMEBREW_REPOSITORY/Library/Homebrew/Gemfile.lock" | cut -f1 -d' ')
-        echo "::set-output name=gems-hash::$GEMS_HASH"
-        if [ "$RUNNER_OS" = "Linux" ]; then
-          sudo chown -R "$USER" "$HOMEBREW_PREFIX"
-        fi
-
     - name: Install RAPIDS brew dependencies
       run: |
         sudo apt-get install linuxbrew-wrapper
