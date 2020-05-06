@@ -25,6 +25,10 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+    - name: Setup Python # Set Python version
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
     - name: Install brew dependencies in linux
       run: sudo apt-get install libmariadb-client-lgpl-dev libxml2-dev libssl-dev
     - name: Install brew
@@ -41,10 +45,6 @@ jobs:
         brew install gcc@6
         HOMEBREW_CC=gcc-6 brew install pandoc
         R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
-    - name: Setup Python # Set Python version
-      uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
     # Install pip and pytest
     - name: Install RAPIDS python dependencies
       run: |
