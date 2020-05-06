@@ -30,10 +30,10 @@ jobs:
     - name: Install brew
       run: |
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-        export PATH=$HOME/.linuxbrew/bin:$PATH
-        source ~/.bashrc
+        eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
     - name: Install RAPIDS brew dependencies
       run: |
+        brew install gcc
         brew install r
         brew install gcc@6
         HOMEBREW_CC=gcc-6 brew install pandoc
