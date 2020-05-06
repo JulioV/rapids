@@ -1,0 +1,55 @@
+
+name: CI
+on:
+  push:
+    branches: [ gatest ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    services:
+      mysql:
+          image: mysql:5.7
+          env:
+              MYSQL_ALLOW_EMPTY_PASSWORD: yes
+              MYSQL_DATABASE: test
+          ports:
+              - 13306:3306
+          options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    strategy:
+      matrix:
+        python-version: [3.8] #[3.5, 3.6, 3.7, 3.8]
+        os: [ubuntu-latest] #, windows-latest, macOS-latest]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+    - name: Install brew dependencies in linux
+      run: sudo apt-get install libmariadb-client-lgpl-dev libxml2-dev libssl-dev
+    - name: Install brew
+      run: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        export PATH=$HOME/.linuxbrew/bin:$PATH
+        source ~/.bashrc
+    - name: Install RAPIDS brew dependencies
+      run: |
+        brew install r
+        brew install gcc@6
+        HOMEBREW_CC=gcc-6 brew install pandoc
+        R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
+    - name: Setup Python # Set Python version
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    # Install pip and pytest
+    - name: Install RAPIDS python dependencies
+      run: |
+        cd rapids
+        conda env create -f environment.yml -n GA_ENV
+        conda activate GA_ENV
+    - name: Restore RAPIDS renv environment
+      run: |
+        snakemake renv_install
+        snakemake renv_init
+        snakemake renv_restore
