@@ -30,7 +30,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install brew dependencies in linux
-      run: sudo apt-get install libmariadb-client-lgpl-dev libxml2-dev libssl-dev
+      run: sudo apt-get install libmariadb-client-lgpl-dev libxml2-dev libssl-dev libglib2.0-dev
     - name: Install brew
       run: |
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
