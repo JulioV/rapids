@@ -24,6 +24,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: docker://linuxbrew/brew:latest
     - uses: actions/checkout@v2
     - name: Setup Python # Set Python version
       uses: actions/setup-python@v1
@@ -31,15 +32,16 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install brew dependencies in linux
       run: sudo apt-get install libmariadb-client-lgpl-dev libxml2-dev libssl-dev libglib2.0-dev
-    - name: Install brew
-      run: |
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-        test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
-        test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-        echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
-        echo "::add-path::/home/linuxbrew/.linuxbrew/bin"
+   # - name: Install brew
+    #  run: |
+     #   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+      #  test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+       # test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+        #echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
+        #echo "::add-path::/home/linuxbrew/.linuxbrew/bin"
     - name: Install RAPIDS brew dependencies
       run: |
+        brew --version
         brew install gcc
         brew install pandoc
         brew install r -d -v
