@@ -41,6 +41,7 @@ jobs:
         #echo "::add-path::/home/linuxbrew/.linuxbrew/bin"
     - name: Install RAPIDS brew dependencies
       run: |
+        sudo apt-get install linuxbrew-wrapper
         brew --version
         brew install gcc
         brew install pandoc
