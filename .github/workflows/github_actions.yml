@@ -24,7 +24,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: docker://linuxbrew/brew:latest
+    - uses: docker://homebrew/brew:latest
     - uses: actions/checkout@v2
     - name: Setup Python # Set Python version
       uses: actions/setup-python@v1
@@ -41,7 +41,6 @@ jobs:
         #echo "::add-path::/home/linuxbrew/.linuxbrew/bin"
     - name: Install RAPIDS brew dependencies
       run: |
-        docker build -t linuxbrew-bionic https://raw.githubusercontent.com/Linuxbrew/docker/master/bionic/Dockerfile
         brew --version
         brew install gcc
         brew install pandoc
