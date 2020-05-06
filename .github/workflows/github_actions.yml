@@ -42,8 +42,7 @@ jobs:
       run: |
         brew install gcc
         brew install r
-        brew install gcc@6
-        HOMEBREW_CC=gcc-6 brew install pandoc
+        brew install pandoc
         R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
     # Install pip and pytest
     - name: Install RAPIDS python dependencies
