@@ -25,10 +25,18 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    - uses: actions/checkout@v2
+    - name: Setup Python # Set Python version
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}- 
     - uses: goanpeca/setup-miniconda@v1
       with:
         miniconda-version: 'latest'
         python-version: ${{ matrix.python-version }}
+        activate-environment: GA_ENV
+        environment-file: environment.yml
+        auto-activate-base: false
     - uses: actions/cache@v1
       if: startsWith(runner.os, 'Linux')
       with:
@@ -43,11 +51,6 @@ jobs:
         key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
         restore-keys: |
           ${{ runner.os }}-renv-
-    - uses: actions/checkout@v2
-    - name: Setup Python # Set Python version
-      uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
     - name: Install RAPIDS brew dependencies
       run: |
         brew --version
@@ -57,11 +60,11 @@ jobs:
         R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
     # Install pip and pytest
     - name: Install RAPIDS python dependencies
-      shell: bash
+      shell: bash -l {0}
       run: |
         ls -al
-        conda env create -f environment.yml -n GA_ENV
-        conda activate GA_ENV
+#        conda env create -f environment.yml -n GA_ENV
+#        conda activate GA_ENV
     - name: Restore RAPIDS renv environment
       shell: bash -l {0}
       run: |
