@@ -27,7 +27,7 @@ jobs:
     steps:
     - uses: goanpeca/setup-miniconda@v1
       with:
-        auto-update-conda: true
+        miniconda-version: 'latest'
         python-version: ${{ matrix.python-version }}
     - uses: actions/cache@v1
       if: startsWith(runner.os, 'Linux')
