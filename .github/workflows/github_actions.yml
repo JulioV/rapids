@@ -25,6 +25,10 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    - uses: goanpeca/setup-miniconda@v1
+      with:
+        auto-update-conda: true
+        python-version: ${{ matrix.python-version }}
     - uses: actions/cache@v1
       if: startsWith(runner.os, 'Linux')
       with:
@@ -53,12 +57,20 @@ jobs:
         R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
     # Install pip and pytest
     - name: Install RAPIDS python dependencies
+      shell: bash
       run: |
         ls -al
         conda env create -f environment.yml -n GA_ENV
         conda activate GA_ENV
     - name: Restore RAPIDS renv environment
+      shell: bash -l {0}
       run: |
         snakemake renv_install
         snakemake renv_init
         snakemake renv_restore
+    - name: Run tests
+      shell: bash -l {0}
+      run: |
+        cp -r tests/data/raw/* data/raw
+        snakemake --profile tests/settings -R sms_features
+        python -m unittest discover tests/scripts/ -v
