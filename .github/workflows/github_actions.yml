@@ -25,35 +25,36 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/cache@v1
+      if: startsWith(runner.os, 'Linux')
+      with:
+        path: ~/.local/share/renv
+        key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-renv-
+    - uses: actions/cache@v1
+      if: startsWith(runner.os, 'macOS')
+      with:
+        path: ~/Library/Application Support/renv
+        key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-renv-
     - uses: actions/checkout@v2
     - name: Setup Python # Set Python version
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    #- name: Install brew dependencies in linux
-    ##  run: sudo apt-get install libmariadb-client-lgpl-dev libxml2-dev libssl-dev libglib2.0-dev
-   # - name: Install brew
-    #  run: |
-     #   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-      #  test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
-       # test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-        #echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
-        #echo "::add-path::/home/linuxbrew/.linuxbrew/bin"
     - name: Install RAPIDS brew dependencies
       run: |
         brew --version
         brew install gcc
         brew install pandoc
-        brew install r -d -v
-        echo "Finished installing r"
-        R --version
+        brew install r
         R -e 'install.packages(c( "rmarkdown"), repos = "http://cran.us.r-project.org")'
-        echo "Finished installing rmarkdown"
     # Install pip and pytest
     - name: Install RAPIDS python dependencies
       run: |
-        cd rapids
+        ls -al
         conda env create -f environment.yml -n GA_ENV
         conda activate GA_ENV
     - name: Restore RAPIDS renv environment
