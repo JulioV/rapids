@@ -34,8 +34,8 @@ jobs:
       with:
         miniconda-version: 'latest'
         python-version: ${{ matrix.python-version }}
-        activate-environment: GA_ENV
         environment-file: environment.yml
+        activate-environment: moshi-env
         auto-activate-base: false
     - uses: actions/cache@v1
       if: startsWith(runner.os, 'Linux')
